@@ -1,15 +1,13 @@
 from contextlib import asynccontextmanager
-from datetime import datetime
-from operator import and_
 from uuid import UUID
 
-from fastapi import Depends, FastAPI, File, Form, UploadFile
+from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from .auth import verify_access_token
 from .database import create_tables, get_db
-from .models import Chat, Message
+from .models import Chat
 from .schemas import ChatUpdate
 
 
