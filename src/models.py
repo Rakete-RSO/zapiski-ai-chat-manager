@@ -50,6 +50,7 @@ class Chat(Base):
     )
     user_id: Mapped = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[str] = mapped_column(default="now")
+    name: Mapped[str] = mapped_column()
 
     user: Mapped["User"] = relationship("User", back_populates="chats")
     messages: Mapped[list["Message"]] = relationship("Message", back_populates="chat")

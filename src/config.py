@@ -13,6 +13,3 @@ if DATABASE_URL == "":
     raise Exception("DATABASE_URL environment variable is not set")
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if OPENAI_API_KEY == "":
-    raise Exception("OPENAI_API_KEY environment variable is not set")
