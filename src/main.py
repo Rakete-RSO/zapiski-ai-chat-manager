@@ -8,6 +8,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from .auth import verify_access_token
+from .config import meilisearch_index_chats
 from .database import create_tables, get_db
 from .models import Chat, Message
 from .schemas import ChatUpdate
@@ -26,25 +27,27 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 @app.get("/chat")
-def list_chats(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+def list_chats(token: str = Depends(oauth2_scheme)):
     payload = verify_access_token(token)
     if not payload:
         return {"msg": "Invalid token"}
     user_id = payload["sub"]
-    chats = (
-        db.query(Chat)
-        .filter(Chat.user_id == user_id)
-        .order_by(Chat.created_at.desc())
-        .all()
+
+    # NOTE: Don't delete this -> example how to set filterable attributes
+    # meilisearch_index_chats.update_filterable_attributes(["user_id", "name", "id"])
+    search_results = meilisearch_index_chats.search(
+        "",  # Empty query string to match all documents
+        {
+            "filter": f"user_id = '{user_id}'",
+            "limit": 1000,  # Adjust this value based on your needs
+        },
     )
     return [
         {
-            "id": chat.id,
-            "name": chat.name,
-            "created_at": chat.created_at,
+            "id": hit["id"],
+            "name": hit["name"],
         }
-        for chat in chats
-        if chat.name != ""
+        for hit in search_results["hits"]
     ]
 
 
@@ -123,6 +126,7 @@ def create_chat(db: Session = Depends(get_db), token: str = Depends(oauth2_schem
         + "ki bodo temu človeku pomagale pri študiju. Če v zapiskih kje omeni tehnični pojem (na primer Jakobinska matrika) "
         + "pojasni teorijo za tem pojmom"
         + "VEDNO: Odgovarjaj v slovenščini, tudi če gre za vprašanje v angleščini ali drugih jezikih"
+        + "ZELO POMEMBNO: Odgovarjaj v pravilnem markdown formatu za lažjo berljivost"
     )
     system_message = Message(
         chat_id=new_chat.id,

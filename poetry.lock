@@ -115,6 +115,23 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
+name = "camel-converter"
+version = "4.0.1"
+description = "Converts a string from snake case to camel case or camel case to snake case"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "camel_converter-4.0.1-py3-none-any.whl", hash = "sha256:0cba7ca1354a29ca2191983deecc9dcf28889f606c28d6ed18ac7d4586b163ac"},
+    {file = "camel_converter-4.0.1.tar.gz", hash = "sha256:401414549ae4ac4073e38cdc4aa6d464dc534fc40aa06ff787bf0960b0c86535"},
+]
+
+[package.dependencies]
+pydantic = {version = ">=2.0.0", optional = true, markers = "extra == \"pydantic\""}
+
+[package.extras]
+pydantic = ["pydantic (>=2.0.0)"]
+
+[[package]]
 name = "certifi"
 version = "2024.12.14"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -598,6 +615,21 @@ files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
+
+[[package]]
+name = "meilisearch"
+version = "0.33.0"
+description = "The python client for Meilisearch API."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "meilisearch-0.33.0-py3-none-any.whl", hash = "sha256:4aed5b4b0c5f5602574476de37d436701f2f31768b75df64b13cde0cad5988a3"},
+    {file = "meilisearch-0.33.0.tar.gz", hash = "sha256:62c4890b11744f1dde14248a1bb05d7873ceaae6e2119783f391813ad4661a62"},
+]
+
+[package.dependencies]
+camel-converter = {version = "*", extras = ["pydantic"]}
+requests = "*"
 
 [[package]]
 name = "mypy-extensions"
@@ -1101,4 +1133,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.6.3)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "65545673ff9a4f13cf1a49cea3d5571305d79717a0d75b90712034d8bb4dfcc7"
+content-hash = "47165ccd82e7254a8fc4aeb0d027376451ba38fc45fb0f56579227318ff89a67"
