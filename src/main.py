@@ -140,3 +140,9 @@ def create_chat(db: Session = Depends(get_db), token: str = Depends(oauth2_schem
     db.refresh(system_message)
 
     return {"chat_id": new_chat.id}
+
+
+@app.get("/health-check")
+def health_check():
+    # return status 200
+    return {"status": "ok"}
