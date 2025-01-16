@@ -6,10 +6,13 @@ from uuid import UUID
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from strawberry.fastapi import GraphQLRouter
 
 from .auth import verify_access_token
-from .config import meilisearch_index_chats
+
+# from .config import meilisearch_index_chats
 from .database import create_tables, get_db
+from .graphql_schema import schema
 from .models import Chat, Message
 from .schemas import ChatUpdate
 
@@ -24,31 +27,8 @@ async def lifespan(_: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-
-@app.get("/chat")
-def list_chats(token: str = Depends(oauth2_scheme)):
-    payload = verify_access_token(token)
-    if not payload:
-        return {"msg": "Invalid token"}
-    user_id = payload["sub"]
-
-    # NOTE: Don't delete this -> example how to set filterable attributes
-    # meilisearch_index_chats.update_filterable_attributes(["user_id", "name", "id"])
-    search_results = meilisearch_index_chats.search(
-        "",  # Empty query string to match all documents
-        {
-            "filter": f"user_id = '{user_id}'",
-            "limit": 1000,  # Adjust this value based on your needs
-        },
-    )
-    return [
-        {
-            "id": hit["id"],
-            "name": hit["name"],
-        }
-        for hit in search_results["hits"]
-    ]
+graphql_app = GraphQLRouter(schema, context_getter=lambda: {"db": next(get_db())})
+app.include_router(graphql_app, prefix="/graphql")
 
 
 @app.patch("/chat/{id}", response_model=dict)
